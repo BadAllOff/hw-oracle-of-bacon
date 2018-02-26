@@ -35,13 +35,15 @@ class OracleOfBacon
     begin
       xml = URI.parse(uri).read
     rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-      Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError,
-      Net::ProtocolError => e
+        Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError,
+        Net::ProtocolError => e
       # convert all of these into a generic OracleOfBacon::NetworkError,
       #  but keep the original error message
       # your code here
+      raise OracleOfBacon::NetworkError
     end
     # your code here: create the OracleOfBacon::Response object
+    return OracleOfBacon::Response.new(xml)
   end
 
   def make_uri_from_arguments
@@ -68,8 +70,9 @@ class OracleOfBacon
         parse_graph_response
       elsif !@doc.xpath('/spellcheck').empty?
         parse_spellcheck_response
-      elsif !@doc.xpath('/other').empty?
-        parse_unknown_response
+      else
+        @type = :unknown
+        @data = 'Unknown response'
       # your code here: 'elsif' clauses to handle other responses
       # for responses not matching the 3 basic types, the Response
       # object should have type 'unknown' and data 'unknown response'
@@ -89,11 +92,6 @@ class OracleOfBacon
     def parse_spellcheck_response
       @type = :spellcheck
       @data = (@doc.xpath("//match")).map(&:text)
-    end
-
-    def parse_unknown_response
-      @type = :unknown
-      @data = 'Unknown response'
     end
   end
 end

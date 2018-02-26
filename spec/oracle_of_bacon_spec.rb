@@ -70,6 +70,7 @@ describe OracleOfBacon do
       its(:data) { should match /unknown/i }
     end
   end
+
   describe 'constructing URI' do
     subject do
       oob = OracleOfBacon.new('fake_key')
@@ -82,7 +83,8 @@ describe OracleOfBacon do
     it { should match /b=George\+Clooney/ }
     it { should match /a=3%252\+%22a/ }
   end
-  describe 'service connection', :pending => true do
+
+  describe 'service connection' do
     before(:each) do
       @oob = OracleOfBacon.new
       allow(@oob).to receive(:valid?).and_return(true)
