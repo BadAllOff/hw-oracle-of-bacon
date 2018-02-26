@@ -43,7 +43,7 @@ class OracleOfBacon
       raise OracleOfBacon::NetworkError
     end
     # your code here: create the OracleOfBacon::Response object
-    return OracleOfBacon::Response.new(xml)
+    @response = OracleOfBacon::Response.new(xml)
   end
 
   def make_uri_from_arguments
@@ -86,7 +86,9 @@ class OracleOfBacon
 
     def parse_graph_response
       @type = :graph
-      @data = @doc.text.split(%r{\n}).reject(&:blank?).map(&:lstrip)
+      actor_arr = @doc.xpath('//actor').map(&:text)
+      movie_arr = @doc.xpath('//movie').map(&:text)
+      @data = actor_arr.zip(movie_arr).flatten.compact
     end
 
     def parse_spellcheck_response
